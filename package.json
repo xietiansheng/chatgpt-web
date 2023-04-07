@@ -3,7 +3,7 @@
   "version": "2.10.8",
   "private": false,
   "description": "ChatGPT Web",
-  "author": "ChenZhaoYu <chenzhaoyu1994@gmail.com>",
+  "author": "",
   "keywords": [
     "chatgpt-web",
     "chatgpt",
@@ -11,7 +11,7 @@
     "vue"
   ],
   "scripts": {
-    "dev": "vite",
+    "F.E dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",
@@ -25,6 +25,7 @@
   "dependencies": {
     "@traptitech/markdown-it-katex": "^3.6.0",
     "@vueuse/core": "^9.13.0",
+    "aegis-web-sdk": "^1.36.11",
     "highlight.js": "^11.7.0",
     "html2canvas": "^1.4.1",
     "katex": "^0.16.4",
@@ -46,8 +47,8 @@
     "@types/markdown-it-link-attributes": "^3.0.1",
     "@types/node": "^18.14.6",
     "@vitejs/plugin-vue": "^4.0.0",
-    "autoprefixer": "^10.4.13",
     "axios": "^1.3.4",
+    "beautify-console": "^0.2.3",
     "crypto-js": "^4.1.1",
     "eslint": "^8.35.0",
     "husky": "^8.0.3",
@@ -55,13 +56,15 @@
     "lint-staged": "^13.1.2",
     "markdown-it-link-attributes": "^4.0.1",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.21",
     "rimraf": "^4.2.0",
-    "tailwindcss": "^3.2.7",
     "typescript": "~4.9.5",
+    "unplugin-auto-import": "^0.15.2",
+    "unplugin-vue-components": "^0.24.1",
     "vite": "^4.2.0",
     "vite-plugin-pwa": "^0.14.4",
-    "vue-tsc": "^1.2.0"
+    "vite-plugin-windicss": "^1.8.10",
+    "vue-tsc": "^1.2.0",
+    "windicss": "^3.5.6"
   },
   "lint-staged": {
     "*.{ts,tsx,vue}": [

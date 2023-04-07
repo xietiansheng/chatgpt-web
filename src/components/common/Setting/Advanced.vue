@@ -1,9 +1,6 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-import { NButton, NInput, useMessage } from 'naive-ui'
 import { useSettingStore } from '@/store'
 import type { SettingsState } from '@/store/modules/settings/helper'
-import { t } from '@/locales'
 
 const settingStore = useSettingStore()
 
@@ -13,12 +10,12 @@ const systemMessage = ref(settingStore.systemMessage ?? '')
 
 function updateSettings(options: Partial<SettingsState>) {
   settingStore.updateSetting(options)
-  ms.success(t('common.success'))
+  ms.success($t('common.success'))
 }
 
 function handleReset() {
   settingStore.resetSetting()
-  ms.success(t('common.success'))
+  ms.success($t('common.success'))
   window.location.reload()
 }
 </script>

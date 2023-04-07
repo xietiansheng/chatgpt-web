@@ -21,7 +21,7 @@ const i18n = createI18n({
   },
 })
 
-export const t = i18n.global.t
+export const $t = i18n.global.t
 
 export function setLocale(locale: Language) {
   i18n.global.locale = locale

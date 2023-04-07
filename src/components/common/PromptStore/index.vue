@@ -1,12 +1,9 @@
 <script setup lang='ts'>
 import type { DataTableColumns } from 'naive-ui'
-import { computed, h, ref, watch } from 'vue'
-import { NButton, NCard, NDataTable, NDivider, NInput, NList, NListItem, NModal, NPopconfirm, NSpace, NTabPane, NTabs, NThing, useMessage } from 'naive-ui'
-import PromptRecommend from '../../../assets/recommend.json'
-import { SvgIcon } from '..'
+import { NButton } from 'naive-ui'
+import PromptRecommend from '@/assets/recommend.json'
 import { usePromptStore } from '@/store'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
-import { t } from '@/locales'
 
 interface DataProps {
   renderKey: string
@@ -93,16 +90,16 @@ const inputStatus = computed (() => tempPromptKey.value.trim().length < 1 || tem
 const addPromptTemplate = () => {
   for (const i of promptList.value) {
     if (i.key === tempPromptKey.value) {
-      message.error(t('store.addRepeatTitleTips'))
+      message.error($t('store.addRepeatTitleTips'))
       return
     }
     if (i.value === tempPromptValue.value) {
-      message.error(t('store.addRepeatContentTips', { msg: tempPromptKey.value }))
+      message.error($t('store.addRepeatContentTips', { msg: tempPromptKey.value }))
       return
     }
   }
   promptList.value.unshift({ key: tempPromptKey.value, value: tempPromptValue.value } as never)
-  message.success(t('common.addSuccess'))
+  message.success($t('common.addSuccess'))
   changeShowModal('add')
 }
 
@@ -121,17 +118,17 @@ const modifyPromptTemplate = () => {
   // 搜索有冲突的部分
   for (const i of tempList) {
     if (i.key === tempPromptKey.value) {
-      message.error(t('store.editRepeatTitleTips'))
+      message.error($t('store.editRepeatTitleTips'))
       return
     }
     if (i.value === tempPromptValue.value) {
-      message.error(t('store.editRepeatContentTips', { msg: i.key }))
+      message.error($t('store.editRepeatContentTips', { msg: i.key }))
       return
     }
   }
 
   promptList.value = [{ key: tempPromptKey.value, value: tempPromptValue.value }, ...tempList] as never
-  message.success(t('common.editSuccess'))
+  message.success($t('common.editSuccess'))
   changeShowModal('modify')
 }
 
@@ -139,12 +136,12 @@ const deletePromptTemplate = (row: { key: string; value: string }) => {
   promptList.value = [
     ...promptList.value.filter((item: { key: string; value: string }) => item.key !== row.key),
   ] as never
-  message.success(t('common.deleteSuccess'))
+  message.success($t('common.deleteSuccess'))
 }
 
 const clearPromptTemplate = () => {
   promptList.value = []
-  message.success(t('common.clearSuccess'))
+  message.success($t('common.clearSuccess'))
 }
 
 const importPromptTemplate = (from = 'online') => {
@@ -169,16 +166,16 @@ const importPromptTemplate = (from = 'online') => {
 
     for (const i of jsonData) {
       if (!(key in i) || !(value in i))
-        throw new Error(t('store.importError'))
+        throw new Error($t('store.importError'))
       let safe = true
       for (const j of promptList.value) {
         if (j.key === i[key]) {
-          message.warning(t('store.importRepeatTitle', { msg: i[key] }))
+          message.warning($t('store.importRepeatTitle', { msg: i[key] }))
           safe = false
           break
         }
         if (j.value === i[value]) {
-          message.warning(t('store.importRepeatContent', { msg: i[key] }))
+          message.warning($t('store.importRepeatContent', { msg: i[key] }))
           safe = false
           break
         }
@@ -186,7 +183,7 @@ const importPromptTemplate = (from = 'online') => {
       if (safe)
         promptList.value.unshift({ key: i[key], value: i[value] } as never)
     }
-    message.success(t('common.importSuccess'))
+    message.success($t('common.importSuccess'))
   }
   catch {
     message.error('JSON 格式错误，请检查 JSON 格式')
@@ -230,7 +227,7 @@ const downloadPromptTemplate = async () => {
     downloadURL.value = ''
   }
   catch {
-    message.error(t('store.downloadError'))
+    message.error($t('store.downloadError'))
     downloadURL.value = ''
   }
   finally {
@@ -263,15 +260,15 @@ const pagination = computed(() => {
 const createColumns = (): DataTableColumns<DataProps> => {
   return [
     {
-      title: t('store.title'),
+      title: $t('store.title'),
       key: 'renderKey',
     },
     {
-      title: t('store.description'),
+      title: $t('store.description'),
       key: 'renderValue',
     },
     {
-      title: t('common.action'),
+      title: $t('common.action'),
       key: 'actions',
       width: 100,
       align: 'center',
@@ -285,7 +282,7 @@ const createColumns = (): DataTableColumns<DataProps> => {
               type: 'info',
               onClick: () => changeShowModal('modify', row),
             },
-            { default: () => t('common.edit') },
+            { default: () => $t('common.edit') },
           ),
           h(
             NButton,
@@ -295,7 +292,7 @@ const createColumns = (): DataTableColumns<DataProps> => {
               type: 'error',
               onClick: () => deletePromptTemplate(row),
             },
-            { default: () => t('common.delete') },
+            { default: () => $t('common.delete') },
           ),
           ],
         })
@@ -383,10 +380,10 @@ const dataSource = computed(() => {
               <template #suffix>
                 <div class="flex flex-col items-center gap-2">
                   <NButton tertiary size="small" type="info" @click="changeShowModal('modify', item)">
-                    {{ t('common.edit') }}
+                    {{ $t('common.edit') }}
                   </NButton>
                   <NButton tertiary size="small" type="error" @click="deletePromptTemplate(item)">
-                    {{ t('common.delete') }}
+                    {{ $t('common.delete') }}
                   </NButton>
                 </div>
               </template>
@@ -447,23 +444,28 @@ const dataSource = computed(() => {
 
   <NModal v-model:show="showModal" style="width: 90%; max-width: 600px;" preset="card">
     <NSpace v-if="modalMode === 'add' || modalMode === 'modify'" vertical>
-      {{ t('store.title') }}
+      {{ $t('store.title') }}
       <NInput v-model:value="tempPromptKey" />
-      {{ t('store.description') }}
-      <NInput v-model:value="tempPromptValue" type="textarea" />
+      {{ $t('store.description') }}
+      <NInput
+        v-model:value="tempPromptValue" type="textarea" :autosize="{
+          maxRows: 5,
+          minRows: 5,
+        }"
+      />
       <NButton
         block
         type="primary"
         :disabled="inputStatus"
         @click="() => { modalMode === 'add' ? addPromptTemplate() : modifyPromptTemplate() }"
       >
-        {{ t('common.confirm') }}
+        {{ $t('common.confirm') }}
       </NButton>
     </NSpace>
     <NSpace v-if="modalMode === 'local_import'" vertical>
       <NInput
         v-model:value="tempPromptValue"
-        :placeholder="t('store.importPlaceholder')"
+        :placeholder="$t('store.importPlaceholder')"
         :autosize="{ minRows: 3, maxRows: 15 }"
         type="textarea"
       />
@@ -473,7 +475,7 @@ const dataSource = computed(() => {
         :disabled="inputStatus"
         @click="() => { importPromptTemplate('local') }"
       >
-        {{ t('common.import') }}
+        {{ $t('common.import') }}
       </NButton>
     </NSpace>
   </NModal>

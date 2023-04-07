@@ -1,7 +1,4 @@
 <script setup lang='ts'>
-import { computed } from 'vue'
-import { NLayout, NLayoutContent } from 'naive-ui'
-import { useRouter } from 'vue-router'
 import Sider from './sider/index.vue'
 import Permission from './Permission.vue'
 import { useBasicLayout } from '@/hooks/useBasicLayout'

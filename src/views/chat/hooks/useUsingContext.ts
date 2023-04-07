@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useMessage } from 'naive-ui'
-import { t } from '@/locales'
+import { $t } from '@/locales'
 import { useChatStore } from '@/store'
 
 export function useUsingContext() {
@@ -11,9 +11,9 @@ export function useUsingContext() {
   function toggleUsingContext() {
     chatStore.setUsingContext(!usingContext.value)
     if (usingContext.value)
-      ms.success(t('chat.turnOnContext'))
+      ms.success($t('chat.turnOnContext'))
     else
-      ms.warning(t('chat.turnOffContext'))
+      ms.warning($t('chat.turnOffContext'))
   }
 
   return {

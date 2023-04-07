@@ -3,6 +3,11 @@ import type { PluginOption } from 'vite'
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import Windicss from 'vite-plugin-windicss'
+import { BeautifyConsolePlugin } from 'beautify-console'
 
 function setupPlugins(env: ImportMetaEnv): PluginOption[] {
   return [
@@ -18,6 +23,25 @@ function setupPlugins(env: ImportMetaEnv): PluginOption[] {
         ],
       },
     }),
+    Components({
+      dts: true,
+      resolvers: [NaiveUiResolver()],
+    }),
+    AutoImport({
+      dts: true,
+      imports: [
+        'vue',
+        'vue-router',
+        '@vueuse/core',
+        {
+          '@/locales': ['$t'],
+          'pinia': ['storeToRefs'],
+          'naive-ui': ['useMessage', 'useDialog'],
+        },
+      ],
+    }),
+    Windicss(),
+    BeautifyConsolePlugin(),
   ]
 }
 

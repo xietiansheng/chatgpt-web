@@ -1,21 +1,15 @@
 <script setup lang='ts'>
-import type { Ref } from 'vue'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { storeToRefs } from 'pinia'
-import { NAutoComplete, NButton, NInput, useDialog, useMessage } from 'naive-ui'
 import html2canvas from 'html2canvas'
-import { Message } from './components'
+import type { Ref } from 'vue'
+import { Empty, HeaderComponent, Message } from './components'
 import { useScroll } from './hooks/useScroll'
 import { useChat } from './hooks/useChat'
 import { useCopyCode } from './hooks/useCopyCode'
 import { useUsingContext } from './hooks/useUsingContext'
-import HeaderComponent from './components/Header/index.vue'
-import { HoverButton, SvgIcon } from '@/components/common'
 import { useBasicLayout } from '@/hooks/useBasicLayout'
 import { useChatStore, usePromptStore } from '@/store'
 import { fetchChatAPIProcess } from '@/api'
-import { t } from '@/locales'
+import type { PromptItem } from '@/views/chat/types'
 
 let controller = new AbortController()
 
@@ -81,7 +75,7 @@ async function onConversation() {
       requestOptions: { prompt: message, options: null },
     },
   )
-  scrollToBottom()
+  scrollToBottomIfNotEmpty()
 
   loading.value = true
   prompt.value = ''
@@ -104,7 +98,7 @@ async function onConversation() {
       requestOptions: { prompt: message, options: { ...options } },
     },
   )
-  scrollToBottom()
+  scrollToBottomIfNotEmpty()
 
   try {
     let lastText = ''
@@ -157,7 +151,7 @@ async function onConversation() {
     await fetchChatAPIOnce()
   }
   catch (error: any) {
-    const errorMessage = error?.message ?? t('common.wrong')
+    const errorMessage = error?.message ?? $t('common.wrong')
 
     if (error.message === 'canceled') {
       updateChatSome(
@@ -296,7 +290,7 @@ async function onRegenerate(index: number) {
       return
     }
 
-    const errorMessage = error?.message ?? t('common.wrong')
+    const errorMessage = error?.message ?? $t('common.wrong')
 
     updateChat(
       +uuid,
@@ -322,10 +316,10 @@ function handleExport() {
     return
 
   const d = dialog.warning({
-    title: t('chat.exportImage'),
-    content: t('chat.exportImageConfirm'),
-    positiveText: t('common.yes'),
-    negativeText: t('common.no'),
+    title: $t('chat.exportImage'),
+    content: $t('chat.exportImageConfirm'),
+    positiveText: $t('common.yes'),
+    negativeText: $t('common.no'),
     onPositiveClick: async () => {
       try {
         d.loading = true
@@ -346,11 +340,11 @@ function handleExport() {
         document.body.removeChild(tempLink)
         window.URL.revokeObjectURL(imgUrl)
         d.loading = false
-        ms.success(t('chat.exportSuccess'))
+        ms.success($t('chat.exportSuccess'))
         Promise.resolve()
       }
       catch (error: any) {
-        ms.error(t('chat.exportFailed'))
+        ms.error($t('chat.exportFailed'))
       }
       finally {
         d.loading = false
@@ -364,10 +358,10 @@ function handleDelete(index: number) {
     return
 
   dialog.warning({
-    title: t('chat.deleteMessage'),
-    content: t('chat.deleteMessageConfirm'),
-    positiveText: t('common.yes'),
-    negativeText: t('common.no'),
+    title: $t('chat.deleteMessage'),
+    content: $t('chat.deleteMessageConfirm'),
+    positiveText: $t('common.yes'),
+    negativeText: $t('common.no'),
     onPositiveClick: () => {
       chatStore.deleteChatByUuid(+uuid, index)
     },
@@ -379,10 +373,10 @@ function handleClear() {
     return
 
   dialog.warning({
-    title: t('chat.clearChat'),
-    content: t('chat.clearChatConfirm'),
-    positiveText: t('common.yes'),
-    negativeText: t('common.no'),
+    title: $t('chat.clearChat'),
+    content: $t('chat.clearChatConfirm'),
+    positiveText: $t('common.yes'),
+    negativeText: $t('common.no'),
     onPositiveClick: () => {
       chatStore.clearChatByUuid(+uuid)
     },
@@ -439,8 +433,8 @@ const renderOption = (option: { label: string }) => {
 
 const placeholder = computed(() => {
   if (isMobile.value)
-    return t('chat.placeholderMobile')
-  return t('chat.placeholder')
+    return $t('chat.placeholderMobile')
+  return $t('chat.placeholder')
 })
 
 const buttonDisabled = computed(() => {
@@ -454,8 +448,24 @@ const footerClass = computed(() => {
   return classes
 })
 
+/**
+ * 提示词被点击
+ */
+const onPromptItemClick = (item: PromptItem) => {
+  prompt.value = item.prompt
+  handleSubmit()
+}
+
+/**
+ * 有聊天数据的情况下滚动到底部
+ */
+function scrollToBottomIfNotEmpty() {
+  if (dataSources.value.length)
+    scrollToBottom()
+}
+
 onMounted(() => {
-  scrollToBottom()
+  scrollToBottomIfNotEmpty()
   if (inputRef.value && !isMobile.value)
     inputRef.value?.focus()
 })
@@ -482,10 +492,7 @@ onUnmounted(() => {
           :class="[isMobile ? 'p-2' : 'p-4']"
         >
           <template v-if="!dataSources.length">
-            <div class="flex items-center justify-center mt-4 text-center text-neutral-300">
-              <SvgIcon icon="ri:bubble-chart-fill" class="mr-2 text-3xl" />
-              <span>Aha~</span>
-            </div>
+            <Empty @click-prompt="onPromptItemClick" />
           </template>
           <template v-else>
             <div>
